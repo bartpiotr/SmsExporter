@@ -21,7 +21,7 @@ class CsvExporterImpl(val context: Context) : CsvExporter {
 
     fun toCsvData(smsList: List<Sms>): List<Array<String>> {
         var csvData = ArrayList<Array<String>>()
-        csvData.add(arrayOf("Sender", "Date", "Content"))
+        csvData.add(arrayOf("Sender", "Recipient", "Date", "Content"))
 
         smsList.sortedByDescending { sms -> sms.dateTime }
                 .forEach { sms -> csvData.add(toStringArray(sms)) }
@@ -30,6 +30,6 @@ class CsvExporterImpl(val context: Context) : CsvExporter {
     }
 
     private fun toStringArray(sms: Sms)
-            = arrayOf(sms.sender, sms.dateTime.toString(), sms.content)
+            = arrayOf(sms.sender, sms.recipient, sms.dateTime.toString(), sms.content)
 
 }
