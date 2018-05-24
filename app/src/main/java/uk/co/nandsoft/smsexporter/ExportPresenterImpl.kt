@@ -17,7 +17,7 @@ class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val e
 
     override fun onPermissionChanged() {
         checkPermissions()
-        view.enableExport()
+        enableExport()
     }
 
     override fun performExport() {
