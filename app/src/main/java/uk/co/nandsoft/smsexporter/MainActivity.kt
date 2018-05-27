@@ -28,11 +28,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     val presenter = ExportPresenterImpl(this, SmsRetrieverImpl(this), CsvExporterImpl(this))
 
     override fun enableExport() {
-        buttonExport.isEnabled = true;
+        buttonExport.isEnabled = true
     }
 
     override fun disableExport() {
-        buttonExport.isEnabled = false;
+        buttonExport.isEnabled = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +43,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun requestPermissions(permissions: Array<String>){
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS);
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS)
     }
 
     override fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun sendEmail(attachmentUri : Uri){
@@ -61,11 +61,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_PERMISSIONS && resultCode == Activity.RESULT_OK){
+  /*      if(requestCode == REQUEST_CODE_PERMISSIONS && resultCode == Activity.RESULT_OK){
             presenter.onPermissionChanged()
-        }
+        }else{
+            presenter.onPermissionRequestRejected()
+        }*/ //wrong - should implement permission result callback
     }
 
+    override fun quit() {
+        finishAffinity()
+    }
     private fun initializeViews() {
         setSupportActionBar(toolbar)
         val toggle = ActionBarDrawerToggle(

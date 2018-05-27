@@ -5,4 +5,5 @@ interface ExportPresenter {
     fun performExport()
     fun onCreate()
     fun onPermissionChanged()
+    fun onPermissionRequestRejected()
 }

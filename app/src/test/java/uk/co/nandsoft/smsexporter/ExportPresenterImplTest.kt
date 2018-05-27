@@ -1,5 +1,6 @@
 package uk.co.nandsoft.smsexporter
 
+import android.Manifest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -51,5 +52,18 @@ class ExportPresenterImplTest{
     fun exportWritesSmsToCsvFile(){
         presenter.performExport()
         Mockito.verify(exporter).toCsv(any())
+    }
+
+    @Test
+    fun onPermissionChangeChecksPermissions() {
+        presenter.onPermissionChanged()
+        Mockito.verify(view).hasPermission(Manifest.permission.READ_SMS)
+        Mockito.verify(view).hasPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    }
+
+    @Test
+    fun onPermissionRejectedShouldTheAppShouldQuit(){
+        presenter.onPermissionRequestRejected()
+        Mockito.verify(view).quit()
     }
 }

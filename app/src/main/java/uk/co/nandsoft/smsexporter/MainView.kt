@@ -9,4 +9,5 @@ interface MainView{
     fun sendEmail(attachmentUri: Uri)
     fun enableExport()
     fun disableExport()
+    fun quit()
 }

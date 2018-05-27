@@ -20,8 +20,12 @@ class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val e
         enableExport()
     }
 
+    override fun onPermissionRequestRejected() {
+        view.quit()
+    }
+
     override fun performExport() {
-        val smsList = retriever.fetchAll();
+        val smsList = retriever.fetchAll()
         val csvFileUri = exporter.toCsv(smsList)
         view.sendEmail(csvFileUri)
     }
