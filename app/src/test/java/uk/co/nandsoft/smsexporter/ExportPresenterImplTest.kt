@@ -1,20 +1,17 @@
 package uk.co.nandsoft.smsexporter
 
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.anyVararg
+import com.nhaarman.mockitokotlin2.verify
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import uk.co.nandsoft.smsexporter.model.CsvExporter
 import uk.co.nandsoft.smsexporter.model.SmsRetriever
 
 class ExportPresenterImplTest{
 
-    private fun <T> any(): T {
-        Mockito.any<T>()
-        return uninitialized()
-    }
-    private fun <T> uninitialized(): T = null as T
 
     @Mock
     lateinit var view: MainView
@@ -33,23 +30,21 @@ class ExportPresenterImplTest{
         presenter = ExportPresenterImpl(view, retriever, exporter)
     }
 
-
-
     @Test
     fun exportFetchesMessages(){
         presenter.performExport()
-        Mockito.verify(retriever).fetchAll()
+        verify(retriever).fetchAll()
     }
 
     @Test
     fun exportSendsEmail(){
         presenter.performExport()
-        Mockito.verify(view).sendEmail(any())
+        verify(view).sendEmail(anyVararg())
     }
 
     @Test
     fun exportWritesSmsToCsvFile(){
         presenter.performExport()
-        Mockito.verify(exporter).toCsv(any())
+        verify(exporter).toCsv(any())
     }
 }

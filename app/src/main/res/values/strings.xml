@@ -12,4 +12,8 @@
     <string name="send_email">Send email&#8230;</string>
     <string name="inbox">Inbox</string>
     <string name="outbox">Outbox</string>
+    <string name="content">Content</string>
+    <string name="date">Date</string>
+    <string name="recipient">Recipient</string>
+    <string name="sender">Sender</string>
 </resources>

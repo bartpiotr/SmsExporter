@@ -1,36 +1,45 @@
 package uk.co.nandsoft.smsexporter.model
 
 import android.content.Context
-import org.junit.Assert.*
-import org.hamcrest.CoreMatchers.*
-
+import com.nhaarman.mockitokotlin2.any
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
+import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.Mockito
 import java.util.*
 
 class CsvExporterTest{
+    private val context = mock<Context>()
+    private val csvExporter = CsvExporterImpl(context);
+    private val smsList =  ArrayList<Sms>()
+    private val firstMessage = Sms("0123456789", "0444555666", "First Message", Date(2000L))
+    private val secondMessage = Sms("0222333444", "0777888999", "Second Message", Date(4000L))
 
-    @Test
-    fun toCsvDataReturnsCollectionOfStringArrays() {
-        val context = Mockito.mock(Context::class.java)
-        var csvExporter = CsvExporterImpl(context);
-
-        val smsList =  ArrayList<Sms>()
-        val firstMessage = Sms("0123456789", "First Message", Date(2000L))
-        val secondMessage = Sms("0222333444", "Second Message", Date(4000L))
+    @Before
+    fun setUp(){
+        whenever(context.getString(any())).thenReturn("header")
         smsList.add(firstMessage)
         smsList.add(secondMessage)
+    }
+
+    @Test
+    fun toCsvDataReturnsCorrectSizeList() {
+        val result = csvExporter.toCsvData(smsList)
+        assertEquals(3, result.size)
+    }
+
+    @Test
+    fun toCsvDataReturnsCorrectData(){
         val result = csvExporter.toCsvData(smsList)
 
-        assertEquals(3, result.size)
-
         assertEquals(firstMessage.sender, result.get(2)[0])
-        assertEquals(firstMessage.dateTime.toString(), result.get(2)[1])
-        assertEquals(firstMessage.content, result.get(2)[2])
-
+        assertEquals(firstMessage.recipient, result.get(2)[1])
+        assertEquals(firstMessage.dateTime.toString(), result.get(2)[2])
+        assertEquals(firstMessage.content, result.get(2)[3])
         assertEquals(secondMessage.sender, result.get(1)[0])
-        assertEquals(secondMessage.dateTime.toString(), result.get(1)[1])
-        assertEquals(secondMessage.content, result.get(1)[2])
+        assertEquals(secondMessage.recipient, result.get(1)[1])
+        assertEquals(secondMessage.dateTime.toString(), result.get(1)[2])
+        assertEquals(secondMessage.content, result.get(1)[3])
     }
 }
