@@ -7,6 +7,6 @@ interface MainView{
     fun hasPermission(permission: String): Boolean
     fun requestPermissions(permissions: Array<String>)
     fun sendEmail(attachmentUri: Uri)
-    fun enableExport()
-    fun disableExport()
+    fun showMessage(message: Int)
+    fun closeApp()
 }

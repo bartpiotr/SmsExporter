@@ -6,7 +6,10 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="permissions_required">Can\'t continue without the permissions</string>
     <string name="export_now">Export now</string>
     <string name="sms_list">Sms list</string>
-    <string name="send_email">Send email...</string>
+    <string name="send_email">Send email&#8230;</string>
+    <string name="inbox">Inbox</string>
+    <string name="outbox">Outbox</string>
 </resources>

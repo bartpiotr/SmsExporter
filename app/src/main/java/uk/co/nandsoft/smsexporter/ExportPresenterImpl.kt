@@ -1,6 +1,8 @@
 package uk.co.nandsoft.smsexporter
 
 import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
 import uk.co.nandsoft.smsexporter.model.CsvExporter
 import uk.co.nandsoft.smsexporter.model.SmsRetriever
 
@@ -12,27 +14,28 @@ class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val e
     override fun onCreate() {
         checkPermissions()
         requestPermissions()
-        enableExport()
     }
 
     override fun onPermissionChanged() {
         checkPermissions()
-        enableExport()
+        quitWhenNoPermissions()
+    }
+
+    private fun quitWhenNoPermissions() {
+        if (!hasPermissions()) {
+            view.showMessage(R.string.permissions_required)
+            view.closeApp()
+        }
     }
 
     override fun performExport() {
-        val smsList = retriever.fetchAll();
+        val smsList = retriever.fetchAll()
         val csvFileUri = exporter.toCsv(smsList)
         view.sendEmail(csvFileUri)
     }
 
-    private fun enableExport(){
-        if(hasPermissions()){
-            view.enableExport()
-        }else{
-            view.disableExport()
-        }
-    }
+    private fun isGranted(grantResult: Int) = grantResult == PackageManager.PERMISSION_GRANTED
+
 
     private fun checkPermissions() {
         hasPermissionSMS = view.hasPermission(Manifest.permission.READ_SMS)

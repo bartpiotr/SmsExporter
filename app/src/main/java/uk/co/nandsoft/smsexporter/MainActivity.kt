@@ -13,6 +13,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import de.cketti.mailto.EmailIntentBuilder
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
@@ -23,17 +24,9 @@ import java.util.*
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, MainView {
 
-    val REQUEST_CODE_PERMISSIONS = 1
+    private val REQUEST_CODE_PERMISSIONS = 1
 
-    val presenter = ExportPresenterImpl(this, SmsRetrieverImpl(this), CsvExporterImpl(this))
-
-    override fun enableExport() {
-        buttonExport.isEnabled = true;
-    }
-
-    override fun disableExport() {
-        buttonExport.isEnabled = false;
-    }
+    private val presenter = ExportPresenterImpl(this, SmsRetrieverImpl(this), CsvExporterImpl(this))
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,11 +36,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     override fun requestPermissions(permissions: Array<String>){
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS);
+            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS)
     }
 
     override fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
     override fun sendEmail(attachmentUri : Uri){
@@ -59,11 +52,21 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(Intent.createChooser(emailIntent, getString(R.string.send_email)))
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if(requestCode == REQUEST_CODE_PERMISSIONS && resultCode == Activity.RESULT_OK){
-            presenter.onPermissionChanged()
-        }
+
+     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+         if(requestCode == REQUEST_CODE_PERMISSIONS ) {
+             presenter.onPermissionChanged()
+         }
+         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+
+    override fun showMessage(message: Int) {
+        Toast.makeText(this.applicationContext, message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun closeApp() {
+        this.finishAffinity()
     }
 
     private fun initializeViews() {
