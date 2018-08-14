@@ -1,8 +1,6 @@
 package uk.co.nandsoft.smsexporter
 
-import com.nhaarman.mockitokotlin2.any
-import com.nhaarman.mockitokotlin2.anyVararg
-import com.nhaarman.mockitokotlin2.verify
+import com.nhaarman.mockitokotlin2.*
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -11,7 +9,6 @@ import uk.co.nandsoft.smsexporter.model.CsvExporter
 import uk.co.nandsoft.smsexporter.model.SmsRetriever
 
 class ExportPresenterImplTest{
-
 
     @Mock
     lateinit var view: MainView
@@ -28,23 +25,43 @@ class ExportPresenterImplTest{
     fun setUp(){
         MockitoAnnotations.initMocks(this)
         presenter = ExportPresenterImpl(view, retriever, exporter)
+        whenever(view.hasPermission(any())).thenReturn(false)
     }
 
     @Test
-    fun exportFetchesMessages(){
-        presenter.performExport()
-        verify(retriever).fetchAll()
+    fun oCreate_ChecksPermissions(){
+        presenter.onCreate()
+        verify(view, times(2)).hasPermission(any())
     }
 
     @Test
-    fun exportSendsEmail(){
-        presenter.performExport()
+    fun onCreate_RequestsPermissionsIfNeeded(){
+        presenter.onCreate()
+        verify(view).requestPermissions(any())
+    }
+
+    @Test
+    fun onPermissionChange_QuitsWhenPermissionsNotGranted(){
+        presenter.onCreate()
+        presenter.onPermissionChanged()
+        verify(view).closeApp()
+    }
+
+    @Test
+    fun export_FetchesMessages(){
+        presenter.performExport(true, true)
+        verify(retriever).fetchAll(true, true)
+    }
+
+    @Test
+    fun export_SendsEmail(){
+        presenter.performExport(true, true)
         verify(view).sendEmail(anyVararg())
     }
 
     @Test
-    fun exportWritesSmsToCsvFile(){
-        presenter.performExport()
+    fun export_WritesSmsToCsvFile(){
+        presenter.performExport(true, true)
         verify(exporter).toCsv(any())
     }
 }

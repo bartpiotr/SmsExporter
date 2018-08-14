@@ -76,7 +76,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
-        buttonExport.setOnClickListener( {presenter.performExport()} )
+        buttonExport.setOnClickListener {
+            val fetchInbox = checkBoxInbox.isChecked
+            val fetchOutbox = checkBoxOutbox.isChecked
+            presenter.performExport(fetchInbox, fetchOutbox)
+        }
     }
 
     override fun onBackPressed() {

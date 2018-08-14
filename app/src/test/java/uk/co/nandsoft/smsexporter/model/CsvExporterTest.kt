@@ -11,7 +11,7 @@ import java.util.*
 
 class CsvExporterTest{
     private val context = mock<Context>()
-    private val csvExporter = CsvExporterImpl(context);
+    private val csvExporter = CsvExporterImpl(context)
     private val smsList =  ArrayList<Sms>()
     private val firstMessage = Sms("0123456789", "0444555666", "First Message", Date(2000L))
     private val secondMessage = Sms("0222333444", "0777888999", "Second Message", Date(4000L))
@@ -24,13 +24,13 @@ class CsvExporterTest{
     }
 
     @Test
-    fun toCsvDataReturnsCorrectSizeList() {
+    fun toCsvData_ReturnsCorrectSizeList() {
         val result = csvExporter.toCsvData(smsList)
         assertEquals(3, result.size)
     }
 
     @Test
-    fun toCsvDataReturnsCorrectData(){
+    fun toCsvData_ReturnsCorrectData(){
         val result = csvExporter.toCsvData(smsList)
 
         assertEquals(firstMessage.sender, result.get(2)[0])

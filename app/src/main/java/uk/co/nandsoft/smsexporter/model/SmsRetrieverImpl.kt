@@ -4,17 +4,33 @@ import android.content.Context
 import android.database.Cursor
 import android.net.Uri
 import java.util.*
+import kotlin.collections.ArrayList
+
 const val URI_INBOX = "content://sms/inbox"
 const val URI_OUTBOX = "content://sms/sent"
 
 class SmsRetrieverImpl constructor(private val context: Context) : SmsRetriever {
 
-    override fun fetchAll(): List<Sms> {
-        val cursorInbox = getContentCursor(URI_INBOX)
-        val cursorOutbox = getContentCursor(URI_OUTBOX)
-        val smsList = toSmsList(cursorInbox, true)
-        smsList.addAll(toSmsList(cursorOutbox, false))
+    override fun fetchAll(inbox: Boolean, outbox: Boolean): List<Sms> {
+
+        val smsList = ArrayList<Sms>()
+        if(inbox) {
+            smsList.addAll(getInbox())
+        }
+        if(outbox) {
+            smsList.addAll(getOutbox())
+        }
         return smsList
+    }
+
+    private fun getInbox() : ArrayList<Sms> {
+        val cursorInbox = getContentCursor(URI_INBOX)
+        return toSmsList(cursorInbox, true)
+    }
+
+    private fun getOutbox() : ArrayList<Sms> {
+        val cursorOutbox = getContentCursor(URI_OUTBOX)
+        return toSmsList(cursorOutbox, false)
     }
 
     private fun toSmsList(cursor: Cursor, isInbox: Boolean): ArrayList<Sms> {
@@ -40,5 +56,4 @@ class SmsRetrieverImpl constructor(private val context: Context) : SmsRetriever 
     private fun getContentCursor(contentUri : String): Cursor {
         return context.contentResolver.query(Uri.parse(contentUri), null, null, null, null)
     }
-
 }

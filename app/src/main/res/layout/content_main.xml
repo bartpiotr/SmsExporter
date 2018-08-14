@@ -25,6 +25,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
+        android:checked="true"
         android:text="@string/inbox" />
 
     <CheckBox
@@ -35,6 +36,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="8dp"
         android:layout_marginStart="8dp"
+        android:checked="true"
         android:text="@string/outbox" />
 
     <android.support.v7.widget.RecyclerView

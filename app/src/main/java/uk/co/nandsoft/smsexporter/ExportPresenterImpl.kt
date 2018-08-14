@@ -11,6 +11,7 @@ class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val e
     private var hasPermissionSMS = false
     private var hasPermissionWriteFile = false
 
+
     override fun onCreate() {
         checkPermissions()
         requestPermissions()
@@ -21,21 +22,18 @@ class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val e
         quitWhenNoPermissions()
     }
 
+    override fun performExport(fetchInbox: Boolean, fetchOutbox: Boolean) {
+        val smsList = retriever.fetchAll(fetchInbox, fetchOutbox)
+        val csvFileUri = exporter.toCsv(smsList)
+        view.sendEmail(csvFileUri)
+    }
+
     private fun quitWhenNoPermissions() {
         if (!hasPermissions()) {
             view.showMessage(R.string.permissions_required)
             view.closeApp()
         }
     }
-
-    override fun performExport() {
-        val smsList = retriever.fetchAll()
-        val csvFileUri = exporter.toCsv(smsList)
-        view.sendEmail(csvFileUri)
-    }
-
-    private fun isGranted(grantResult: Int) = grantResult == PackageManager.PERMISSION_GRANTED
-
 
     private fun checkPermissions() {
         hasPermissionSMS = view.hasPermission(Manifest.permission.READ_SMS)
