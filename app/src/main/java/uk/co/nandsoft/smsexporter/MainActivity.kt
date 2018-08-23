@@ -91,8 +91,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private fun initializeViews() {
         setSupportActionBar(toolbar)
-        initializeDrawer()
-        nav_view.setNavigationItemSelectedListener(this)
         initializeListeners()
         recyclerViewMessages.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
     }
@@ -109,13 +107,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         checkBoxOutbox.setOnCheckedChangeListener { buttonView, isChecked ->
             presenter.onFilterChanged(checkBoxInbox.isChecked, isChecked)
         }
-    }
-
-    private fun initializeDrawer() {
-        val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.addDrawerListener(toggle)
-        toggle.syncState()
     }
 
     override fun onBackPressed() {
