@@ -48,20 +48,20 @@ class ExportPresenterImplTest{
     }
 
     @Test
-    fun export_FetchesMessages(){
-        presenter.performExport(true, true)
-        verify(retriever).fetchAll(true, true)
-    }
-
-    @Test
     fun export_SendsEmail(){
-        presenter.performExport(true, true)
+        presenter.performExport()
         verify(view).sendEmail(anyVararg())
     }
 
     @Test
     fun export_WritesSmsToCsvFile(){
-        presenter.performExport(true, true)
+        presenter.performExport()
         verify(exporter).toCsv(any())
+    }
+
+    @Test
+    fun onFilterChanged_RetrievesMessages(){
+        presenter.onFilterChanged(true, true)
+        verify(retriever).fetchAll(any(), any())
     }
 }

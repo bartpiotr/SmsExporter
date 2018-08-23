@@ -4,15 +4,19 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import uk.co.nandsoft.smsexporter.model.CsvExporter
+import uk.co.nandsoft.smsexporter.model.Sms
 import uk.co.nandsoft.smsexporter.model.SmsRetriever
 
 class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val exporter: CsvExporter) : ExportPresenter {
 
     private var hasPermissionSMS = false
     private var hasPermissionWriteFile = false
-
+    private var smsList : List<Sms> = ArrayList()
+    private var fetchInbox = true
+    private var fetchOutbox = true
 
     override fun onCreate() {
+        smsList = ArrayList()
         checkPermissions()
         requestPermissions()
     }
@@ -20,12 +24,30 @@ class ExportPresenterImpl(val view: MainView, val retriever: SmsRetriever, val e
     override fun onPermissionChanged() {
         checkPermissions()
         quitWhenNoPermissions()
+        fetchSmsList()
+        showSmsList()
     }
 
-    override fun performExport(fetchInbox: Boolean, fetchOutbox: Boolean) {
-        val smsList = retriever.fetchAll(fetchInbox, fetchOutbox)
+    override fun performExport() {
         val csvFileUri = exporter.toCsv(smsList)
         view.sendEmail(csvFileUri)
+    }
+
+    override fun onFilterChanged(fetchInbox: Boolean, fetchOutbox: Boolean) {
+        this.fetchInbox = fetchInbox
+        this.fetchOutbox = fetchOutbox
+        fetchSmsList()
+        showSmsList()
+    }
+
+    private fun fetchSmsList() {
+        smsList = retriever.fetchAll(fetchInbox, fetchOutbox)
+    }
+
+    private fun showSmsList() {
+        if(hasPermissions()) {
+            view.showSmsList(smsList)
+        }
     }
 
     private fun quitWhenNoPermissions() {

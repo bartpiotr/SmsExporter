@@ -16,4 +16,9 @@
     <string name="date">Date</string>
     <string name="recipient">Recipient</string>
     <string name="sender">Sender</string>
+    <string name="example_message">Hey Jen. Awesome widget! What did you use for animation?</string>
+    <string name="example_date">2 May</string>
+    <string name="example_number">(+44)07654321098</string>
+    <string name="in">In</string>
+    <string name="out">Out</string>
 </resources>

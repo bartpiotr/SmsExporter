@@ -1,6 +1,5 @@
 package uk.co.nandsoft.smsexporter
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -11,29 +10,38 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
 import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import de.cketti.mailto.EmailIntentBuilder
+import kotlinx.android.synthetic.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.content_main.*
 import uk.co.nandsoft.smsexporter.model.CsvExporterImpl
+import uk.co.nandsoft.smsexporter.model.Sms
 import uk.co.nandsoft.smsexporter.model.SmsRetrieverImpl
 import java.util.*
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener, MainView {
 
     private val REQUEST_CODE_PERMISSIONS = 1
-
     private val presenter = ExportPresenterImpl(this, SmsRetrieverImpl(this), CsvExporterImpl(this))
+    private lateinit var adapter: MessageListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initializeViews()
+        initializeRecyclerView()
         presenter.onCreate()
+        presenter.onFilterChanged(checkBoxInbox.isChecked, checkBoxOutbox.isChecked)
     }
+
 
     override fun requestPermissions(permissions: Array<String>){
             ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_PERMISSIONS)
@@ -41,6 +49,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     override fun hasPermission(permission: String): Boolean {
         return ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    }
+
+    override fun showSmsList(messages: List<Sms>) {
+        adapter.smsList = messages
+        adapter.notifyDataSetChanged()
     }
 
     override fun sendEmail(attachmentUri : Uri){
@@ -52,14 +65,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         startActivity(Intent.createChooser(emailIntent, getString(R.string.send_email)))
     }
 
-
-     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
          if(requestCode == REQUEST_CODE_PERMISSIONS ) {
              presenter.onPermissionChanged()
          }
          super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
-
 
     override fun showMessage(message: Int) {
         Toast.makeText(this.applicationContext, message, Toast.LENGTH_LONG).show()
@@ -69,18 +80,42 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         this.finishAffinity()
     }
 
+    private fun initializeRecyclerView(){
+        adapter = MessageListAdapter(this)
+        recyclerViewMessages.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = this@MainActivity.adapter
+        }
+    }
+
     private fun initializeViews() {
         setSupportActionBar(toolbar)
+        initializeDrawer()
+        nav_view.setNavigationItemSelectedListener(this)
+        initializeListeners()
+        recyclerViewMessages.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+    }
+
+    private fun initializeListeners() {
+        buttonExport.setOnClickListener {
+            presenter.performExport()
+        }
+
+        checkBoxInbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            presenter.onFilterChanged(isChecked, checkBoxOutbox.isChecked)
+        }
+
+        checkBoxOutbox.setOnCheckedChangeListener { buttonView, isChecked ->
+            presenter.onFilterChanged(checkBoxInbox.isChecked, isChecked)
+        }
+    }
+
+    private fun initializeDrawer() {
         val toggle = ActionBarDrawerToggle(
                 this, drawer_layout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
         drawer_layout.addDrawerListener(toggle)
         toggle.syncState()
-        nav_view.setNavigationItemSelectedListener(this)
-        buttonExport.setOnClickListener {
-            val fetchInbox = checkBoxInbox.isChecked
-            val fetchOutbox = checkBoxOutbox.isChecked
-            presenter.performExport(fetchInbox, fetchOutbox)
-        }
     }
 
     override fun onBackPressed() {
